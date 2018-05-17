@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Text;
+using System.Linq;
 
 namespace TechJobsConsole
 {
@@ -44,9 +47,9 @@ namespace TechJobsConsole
 
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
                         foreach (string item in results)
-                        {
-                            Console.WriteLine(item);
-                        }
+                            {
+                                Console.WriteLine(item);
+                            }
                     }
                 }
                 else // choice is "search"
@@ -55,21 +58,27 @@ namespace TechJobsConsole
                     string columnChoice = GetUserSelection("Search", columnChoices);
 
                     // What is their search term?
-                    Console.WriteLine("\nSearch term: ");
-                    string searchTerm = Console.ReadLine();
+                    
 
                     List<Dictionary<string, string>> searchResults;
 
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        //searchResults = JobData.FindByValue(searchTerm);
+                        PrintJobs(JobData.FindAll());
                     }
                     else
                     {
+                        Console.WriteLine("\nSearch term: ");
+                        string searchTerm = Console.ReadLine();
                         searchResults = JobData.FindByColumnAndValue(columnChoice, searchTerm);
-                        PrintJobs(searchResults);
+                        {
+                            PrintJobs(searchResults.ToImmutableList());
+                        }
+                        
                     }
+                    
                 }
             }
         }
@@ -100,8 +109,15 @@ namespace TechJobsConsole
                 }
 
                 string input = Console.ReadLine();
-                choiceIdx = int.Parse(input);
-
+                try
+                {
+                    choiceIdx = int.Parse(input);
+                }
+                
+                catch (FormatException)
+                {
+                    choiceIdx = -1;
+                }
                 if (choiceIdx < 0 || choiceIdx >= choiceKeys.Length)
                 {
                     Console.WriteLine("Invalid choices. Try again.");
@@ -116,9 +132,19 @@ namespace TechJobsConsole
             return choiceKeys[choiceIdx];
         }
 
-        private static void PrintJobs(List<Dictionary<string, string>> someJobs)
+        private static void PrintJobs(ImmutableList<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("printJobs is not implemented yet");
+            StringBuilder tech = new StringBuilder();
+            foreach(Dictionary<string, string> job in someJobs)
+            {
+                tech.AppendLine("***");
+                foreach(string key in job.Keys)
+                    {
+                        tech.AppendFormat("{0}: {1}\n", key, job[key]);
+                    }
+            }
+            tech.AppendLine("***");
+            Console.WriteLine(tech.ToString());
         }
     }
 }
