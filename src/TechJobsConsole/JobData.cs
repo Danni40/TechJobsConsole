@@ -42,10 +42,6 @@ namespace TechJobsConsole
             HashSet<Dictionary<string, string>> listJobs = new HashSet<Dictionary<string, string>>();
             List<Dictionary<string, string>> findJobs = new List<Dictionary<string, string>>();
             
-            if (listJobs.Count < 1)
-            {
-                Console.WriteLine("No Results Found");
-            }
             foreach (Dictionary<string, string> job in AllJobs)
             {
                 foreach (string key in job.Keys)
@@ -57,10 +53,7 @@ namespace TechJobsConsole
                     }
                 }
             }
-            if (findJobs.Count < 1)
-            {
-                Console.WriteLine("No Results Found");
-            }
+            
             foreach (Dictionary<string, string> job in listJobs)
             {
                 findJobs.Add(job);
